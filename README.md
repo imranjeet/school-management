@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SchoolCred - School Management System
 
-## Getting Started
+A school management system built with Next.js, React Hook Form, MySQL, and Tailwind CSS.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Add School Page**: Form to input and store school data with validation
+- **Show Schools Page**: Display schools in an ecommerce-style grid layout
+- **Responsive Design**: Works on both mobile and desktop devices
+- **Image Upload**: Store school images in the `schoolImages` folder
+- **Form Validation**: Comprehensive validation using Yup and React Hook Form
+
+## Database Schema
+
+The `schools` table contains the following fields:
+- `id` - int AUTO_INCREMENT (Primary Key)
+- `name` - text (School name)
+- `address` - text (Complete address)
+- `city` - text (City)
+- `state` - text (State)
+- `contact` - varchar(15) (Contact number)
+- `image` - text (Image file path)
+- `email_id` - varchar(255) (Email address)
+- `created_at` - timestamp (Auto-generated)
+
+## Prerequisites
+
+- Node.js 18+ 
+- MySQL 8.0+
+- npm or yarn
+
+## Installation
+
+1. **Clone and install dependencies:**
+   ```bash
+   cd schoolcred
+   npm install
+   ```
+
+2. **Set up MySQL database:**
+   - Create a MySQL database named `schoolcred`
+   - Update the `.env.local` file with your database credentials
+
+3. **Environment Variables:**
+   Create a `.env.local` file in the root directory:
+   ```env
+   DB_HOST=localhost
+   DB_USER=your_username
+   DB_PASSWORD=your_password
+   DB_NAME=schoolcred
+   DB_PORT=3306
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser:**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── addSchool/          # Add school form page
+│   ├── showSchools/        # Display schools page
+│   ├── api/
+│   │   └── schools/        # API endpoints for schools
+│   ├── globals.css         # Global styles
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Home page
+├── lib/
+│   └── db.ts              # Database configuration
+public/
+└── schoolImages/           # School image uploads
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API Endpoints
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `GET /api/schools` - Fetch all schools
+- `POST /api/schools` - Add a new school
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technologies Used
 
-## Learn More
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **Styling**: Tailwind CSS
+- **Forms**: React Hook Form with Yup validation
+- **Database**: MySQL with mysql2
+- **File Upload**: Multer for image handling
 
-To learn more about Next.js, take a look at the following resources:
+## Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Add School Page (`/addSchool`)
+- Responsive form with all required fields
+- Real-time validation
+- Image upload with preview
+- Success/error messaging
+- Form reset functionality
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Show Schools Page (`/showSchools`)
+- Ecommerce-style grid layout
+- Responsive design for all devices
+- Image display with fallback icons
+- School information cards
+- Navigation between pages
 
-## Deploy on Vercel
+## Responsive Design
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The application is fully responsive and works seamlessly on:
+- Mobile devices (320px+)
+- Tablets (768px+)
+- Desktop computers (1024px+)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Validation Rules
+
+- **School Name**: Required
+- **Address**: Required
+- **City**: Required
+- **State**: Required
+- **Contact**: Required, 10 digits only
+- **Email**: Required, valid email format
+- **Image**: Optional, max 5MB, image files only
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is open source and available under the MIT License.
