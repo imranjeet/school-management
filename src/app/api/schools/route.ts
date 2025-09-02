@@ -5,6 +5,7 @@ import { join } from 'path';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Received POST request to /api/schools');
     const formData = await request.formData();
     
     const name = formData.get('name') as string;
@@ -15,8 +16,12 @@ export async function POST(request: NextRequest) {
     const email_id = formData.get('email_id') as string;
     const imageFile = formData.get('image') as File;
     
+    console.log('Form data received:', { name, address, city, state, contact, email_id });
+    console.log('Image file:', imageFile ? { name: imageFile.name, size: imageFile.size, type: imageFile.type } : 'No image');
+    
     // Validate required fields
     if (!name || !address || !city || !state || !contact || !email_id) {
+      console.log('Validation failed: missing required fields');
       return NextResponse.json(
         { error: 'All fields are required' },
         { status: 400 }
@@ -27,24 +32,39 @@ export async function POST(request: NextRequest) {
     
     // Handle image upload
     if (imageFile && imageFile.size > 0) {
-      const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      
-      // Create schoolImages directory if it doesn't exist
-      const uploadDir = join(process.cwd(), 'public', 'schoolImages');
-      await mkdir(uploadDir, { recursive: true });
-      
-      // Generate unique filename
-      const timestamp = Date.now();
-      const fileName = `${timestamp}_${imageFile.name}`;
-      const filePath = join(uploadDir, fileName);
-      
-      // Save file
-      await writeFile(filePath, buffer);
-      imagePath = `/schoolImages/${fileName}`;
+      try {
+        console.log('Processing image upload...');
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        
+        // Create schoolImages directory if it doesn't exist
+        const uploadDir = join(process.cwd(), 'public', 'schoolImages');
+        console.log('Upload directory:', uploadDir);
+        await mkdir(uploadDir, { recursive: true });
+        
+        // Generate unique filename
+        const timestamp = Date.now();
+        const fileName = `${timestamp}_${imageFile.name}`;
+        const filePath = join(uploadDir, fileName);
+        
+        console.log('Saving file to:', filePath);
+        // Save file
+        await writeFile(filePath, buffer);
+        imagePath = `/schoolImages/${fileName}`;
+        console.log('Image saved successfully:', imagePath);
+      } catch (imageError) {
+        console.error('Error processing image:', imageError);
+        return NextResponse.json(
+          { error: 'Failed to process image upload' },
+          { status: 500 }
+        );
+      }
+    } else {
+      console.log('No image file provided');
     }
     
     // Insert into database
+    console.log('Inserting into database...');
     const connection = await createConnection();
     
     const [result] = await connection.execute(
@@ -53,6 +73,7 @@ export async function POST(request: NextRequest) {
     );
     
     await connection.end();
+    console.log('Database insertion successful');
     return NextResponse.json(
       { message: 'School added successfully', id: (result as { insertId: number }).insertId },
       { status: 201 }

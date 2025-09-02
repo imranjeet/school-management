@@ -72,20 +72,31 @@ export default function AddSchool() {
       formData.append('contact', data.contact);
       formData.append('email_id', data.email_id);
 
-      if (data.image && Array.isArray(data.image) && data.image.length > 0) {
-        formData.append('image', data.image[0]);
+      // Handle image upload with better validation
+      if (data.image && data.image.length > 0) {
+        const file = data.image[0];
+        console.log('Uploading image:', file.name, 'Size:', file.size, 'Type:', file.type);
+        formData.append('image', file);
+      } else {
+        console.log('No image selected');
       }
 
+      console.log('Submitting form data...');
       const response = await fetch('/api/schools', {
         method: 'POST',
         body: formData,
       });
 
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
+        const result = await response.json();
+        console.log('Success:', result);
         setMessage({ type: 'success', text: 'School added successfully!' });
         reset();
       } else {
         const errorData = await response.json();
+        console.error('Error response:', errorData);
         setMessage({ type: 'error', text: errorData.error || 'Failed to add school' });
       }
     } catch (error) {
