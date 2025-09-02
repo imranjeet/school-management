@@ -19,6 +19,7 @@ export default function ShowSchools() {
   const [schools, setSchools] = useState<School[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -41,6 +42,34 @@ export default function ShowSchools() {
       console.error('Error fetching schools:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteSchool = async (schoolId: number) => {
+    if (!confirm('Are you sure you want to delete this school? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeletingId(schoolId);
+    
+    try {
+      const response = await fetch(`/api/schools/${schoolId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Remove the school from the local state
+        setSchools(prevSchools => prevSchools.filter(school => school.id !== schoolId));
+        alert('School deleted successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to delete school: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Error deleting school:', error);
+      alert('An error occurred while deleting the school');
+    } finally {
+      setDeletingId(null);
     }
   };
 

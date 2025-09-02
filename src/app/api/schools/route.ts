@@ -15,9 +15,11 @@ export async function POST(request: NextRequest) {
     const contact = formData.get('contact') as string;
     const email_id = formData.get('email_id') as string;
     const imageFile = formData.get('image') as File;
+    const imageUrl = formData.get('imageUrl') as string;
     
     console.log('Form data received:', { name, address, city, state, contact, email_id });
     console.log('Image file:', imageFile ? { name: imageFile.name, size: imageFile.size, type: imageFile.type } : 'No image');
+    console.log('Image URL:', imageUrl || 'No image URL');
     
     // Validate required fields
     if (!name || !address || !city || !state || !contact || !email_id) {
@@ -59,8 +61,11 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
+    } else if (imageUrl && imageUrl.trim()) {
+      console.log('Using provided image URL:', imageUrl);
+      imagePath = imageUrl.trim();
     } else {
-      console.log('No image file provided');
+      console.log('No image file or URL provided');
     }
     
     // Insert into database

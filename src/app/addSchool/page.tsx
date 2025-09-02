@@ -25,7 +25,8 @@ const schema = yup.object({
     .test('fileType', 'Only image files are allowed', (value) => {
       if (!value || !Array.isArray(value) || value.length === 0) return true;
       return ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(value[0].type);
-    })
+    }),
+  imageUrl: yup.string().optional().url('Please enter a valid URL')
 }) as yup.ObjectSchema<FormData>;
 
 interface FormData {
@@ -36,6 +37,7 @@ interface FormData {
   contact: string;
   email_id: string;
   image?: FileList;
+  imageUrl?: string;
 }
 
 export default function AddSchool() {
@@ -77,8 +79,11 @@ export default function AddSchool() {
         const file = data.image[0];
         console.log('Uploading image:', file.name, 'Size:', file.size, 'Type:', file.type);
         formData.append('image', file);
+      } else if (data.imageUrl && data.imageUrl.trim()) {
+        console.log('Using image URL:', data.imageUrl);
+        formData.append('imageUrl', data.imageUrl.trim());
       } else {
-        console.log('No image selected');
+        console.log('No image selected or URL provided');
       }
 
       console.log('Submitting form data...');
@@ -389,6 +394,33 @@ export default function AddSchool() {
                     />
                   </div>
                 )}
+                
+                {/* Image URL Fallback */}
+                <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                  <p className="text-sm text-blue-800 mb-3">
+                    <svg className="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <strong>Alternative:</strong> If file upload doesn&apos;t work, you can provide an image URL
+                  </p>
+                  <div className="relative">
+                    <input
+                      {...register('imageUrl')}
+                      type="url"
+                      placeholder="https://example.com/school-image.jpg"
+                      className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-900 placeholder-gray-500 ${errors.imageUrl ? 'border-red-400' : 'border-blue-200 hover:border-blue-300'}`}
+                    />
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 to-indigo-500/0 group-hover:from-blue-500/5 group-hover:to-indigo-500/5 transition-all duration-300 pointer-events-none"></div>
+                  </div>
+                  {errors.imageUrl && (
+                    <p className="mt-2 text-sm text-red-600 flex items-center animate-shake">
+                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors.imageUrl.message}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-end space-x-4 animate-fade-in-up" style={{ animationDelay: '1.6s' }}>
